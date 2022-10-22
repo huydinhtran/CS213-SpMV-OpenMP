@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     
     char *token;
     int rowInd, colInd;
-    float value;
+    double value;
     int firstRow = 1;
     int rowNum, colNum, NNZ, i, j, k, loop;
 
@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 
     //COO arrays
     // int* array = malloc(n * sizeof(int));
-    float  *coo_val = malloc(NNZ * sizeof(float));
+    double  *coo_val = malloc(NNZ * sizeof(double));
     int    *coo_row = malloc(NNZ * sizeof(int));
     int    *coo_col = malloc(NNZ * sizeof(int));
     int    counter = 0;
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     }
 
     //CSR arrays
-    float *csr_val = malloc(NNZ     * sizeof(float));
+    double *csr_val = malloc(NNZ     * sizeof(double));
     int   *csr_col = malloc(NNZ     * sizeof(int));
     int   *csr_row = malloc((NNZ+1) * sizeof(int));
 
@@ -97,8 +97,8 @@ int main(int argc, char *argv[]) {
         csr_row[i + 1] += csr_row[i];
     }
 
-    float *X = malloc(NNZ * sizeof(float));
-    float *Y = malloc(NNZ * sizeof(float));
+    double *X = malloc(NNZ * sizeof(double));
+    double *Y = malloc(NNZ * sizeof(double));
     
     //Initialize X to 1
     for (i = 0; i < NNZ; ++i) {
@@ -121,5 +121,31 @@ int main(int argc, char *argv[]) {
     printf("Time of computation: %f seconds\n", end-start);
 
     fclose(fptr);
+    FILE *fwrite;
+    
+    if(strcmp(argv[1], "matrix1.txt") == 0){
+        fwrite = fopen ("CSRVec1.txt", "w+");
+        for(i = 0; i < NNZ; i++){
+            if(Y[i] > 0.0){
+                fprintf(fwrite, "%f\n", Y[i]);
+            }
+        }
+    }
+    if(strcmp(argv[1], "matrix2.txt") == 0){
+        fwrite = fopen ("CSRVec2.txt", "w+");
+        for(i = 0; i < NNZ; i++){
+            if(Y[i] > 0.0){
+                fprintf(fwrite, "%f\n", Y[i]);
+            }
+        }
+    }
+    if(strcmp(argv[1], "matrix3.txt") == 0){
+        fwrite = fopen ("CSRVec3.txt", "w+");
+        for(i = 0; i < NNZ; i++){
+            if(Y[i] > 0.0){
+                fprintf(fwrite, "%f\n", Y[i]);
+            }
+        }
+    }
     return(0);
 }
