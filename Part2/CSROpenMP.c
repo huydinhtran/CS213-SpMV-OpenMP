@@ -104,16 +104,17 @@ int main(int argc, char *argv[]) {
     
     start = omp_get_wtime(); //start time measurement
     
-    for(loop = 0; loop < numIter; loop++){
-        for (i = 0; i < NNZ; ++i) {
-            
-            Y[i] = 0.0;
-            for (j = csr_row[i]; j < csr_row[i+1]; ++j){
-                Y[i] += csr_val[j] * X[csr_col[j]];
+    #pragma omp parallel for 
+        for(loop = 0; loop < numIter; loop++){
+            for (i = 0; i < NNZ; ++i) {
+                
+                Y[i] = 0.0;
+                for (j = csr_row[i]; j < csr_row[i+1]; ++j){
+                    Y[i] += csr_val[j] * X[csr_col[j]];
+                }
             }
+            memcpy(X, Y, sizeof(X));
         }
-        memcpy(X, Y, sizeof(X));
-    }
     end = omp_get_wtime(); //end time measurement
     printf("Time of computation: %f seconds\n", end-start);
 
