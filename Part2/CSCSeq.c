@@ -26,11 +26,11 @@ int main(int argc, char *argv[]) {
     int rowInd, colInd;
     float value;
     int firstRow = 1;
-    int rowNum, colNum, NNZ;
+    int rowNum, colNum, NNZ, i, j, k, loop;
 
     read = getline(&line, &len, fptr);
     token = strtok(line, " ");
-    for(int i = 0; i < 3; i++){
+    for(i = 0; i < 3; i++){
         if(i == 0){
             rowNum = atoi(token);
         }
@@ -42,17 +42,18 @@ int main(int argc, char *argv[]) {
         }
         token = strtok (NULL, " ");
     }
-    // printf( " %d and %d and %d\n", rowNum, colNum, NNZ);
 
     //COO arrays
-    float coo_val[NNZ];
-    int    coo_row[NNZ];
-    int    coo_col[NNZ];
-    int counter = 0;
+    // int* array = malloc(n * sizeof(int));
+    float  *coo_val = malloc(NNZ * sizeof(float));
+    int    *coo_row = malloc(NNZ * sizeof(int));
+    int    *coo_col = malloc(NNZ * sizeof(int));
+    int    counter = 0;
+    
 
     while ((read = getline(&line, &len, fptr)) != -1) {
         token = strtok(line, " ");
-        for(int i = 0; i < 3; i++){
+        for(i = 0; i < 3; i++){
             if(i == 0){
                 rowInd = atoi(token);
                 coo_row[counter] = rowInd;
@@ -68,18 +69,16 @@ int main(int argc, char *argv[]) {
             token = strtok (NULL, " ");
         }
         
-        // printf( " %d and %d and %d\n", rowNum, colNum, NNZ);
-        // printf( " %d and %d and %f\n", coo_row[counter], coo_col[counter], coo_val[counter]);
         counter++;
         
     }
 
     //CSR arrays
-    float csr_val[NNZ];
-    int   csr_col[NNZ];
-    int   csr_row[NNZ + 1];
+    float *csr_val = malloc(NNZ     * sizeof(float));
+    int   *csr_col = malloc(NNZ     * sizeof(int));
+    int   *csr_row = malloc((NNZ+1) * sizeof(int));
 
-    for (int i = 0; i < NNZ; i++)
+    for (i = 0; i < NNZ; i++)
     {
         csr_val[i] = 0;
         csr_col[i] = 0;
@@ -87,31 +86,32 @@ int main(int argc, char *argv[]) {
     }
     csr_row[NNZ] = 0;
 
-    for (int i = 0; i < NNZ; i++)
+    for (i = 0; i < NNZ; i++)
     {
         csr_val[i] = coo_val[i];
         csr_col[i] = coo_col[i];
         csr_row[coo_row[i] + 1]++;
     }
-    for (int i = 0; i < NNZ; i++)
+    for (i = 0; i < NNZ; i++)
     {
         csr_row[i + 1] += csr_row[i];
     }
 
-    float X[NNZ], Y[NNZ];
+    float *X = malloc(NNZ * sizeof(float));
+    float *Y = malloc(NNZ * sizeof(float));
     
     //Initialize X to 1
-    for (int i = 0; i < NNZ; ++i) {
+    for (i = 0; i < NNZ; ++i) {
         X[i] = 1.0;
     }
     
     start = omp_get_wtime(); //start time measurement
     
-    for(int loop = 0; loop < numIter; loop++){
-        for (int i = 0; i < NNZ; ++i) {
+    for(loop = 0; loop < numIter; loop++){
+        for (i = 0; i < NNZ; ++i) {
             
             Y[i] = 0.0;
-            for (int j = csr_row[i]; j < csr_row[i+1]; ++j){
+            for (j = csr_row[i]; j < csr_row[i+1]; ++j){
                 Y[i] += csr_val[j] * X[csr_col[j]];
             }
         }
@@ -120,14 +120,6 @@ int main(int argc, char *argv[]) {
     end = omp_get_wtime(); //end time measurement
     printf("Time of computation: %f seconds\n", end-start);
 
-
-
-    for(int loop = 0; loop < NNZ; loop++)
-        printf("%f ", Y[loop]);
-    printf("\n");
-
     fclose(fptr);
-    if (line)
-        free(line);
     return(0);
 }

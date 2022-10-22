@@ -44,10 +44,12 @@ int main(int argc, char *argv[]) {
     }
 
     //COO arrays
-    float  coo_val[NNZ];
-    int    coo_row[NNZ];
-    int    coo_col[NNZ];
+    // int* array = malloc(n * sizeof(int));
+    float  *coo_val = malloc(NNZ * sizeof(float));
+    int    *coo_row = malloc(NNZ * sizeof(int));
+    int    *coo_col = malloc(NNZ * sizeof(int));
     int    counter = 0;
+    
 
     while ((read = getline(&line, &len, fptr)) != -1) {
         token = strtok(line, " ");
@@ -72,9 +74,9 @@ int main(int argc, char *argv[]) {
     }
 
     //CSR arrays
-    float csr_val[NNZ];
-    int   csr_col[NNZ];
-    int   csr_row[NNZ + 1];
+    float *csr_val = malloc(NNZ     * sizeof(float));
+    int   *csr_col = malloc(NNZ     * sizeof(int));
+    int   *csr_row = malloc((NNZ+1) * sizeof(int));
 
     for (i = 0; i < NNZ; i++)
     {
@@ -95,7 +97,8 @@ int main(int argc, char *argv[]) {
         csr_row[i + 1] += csr_row[i];
     }
 
-    float X[NNZ], Y[NNZ];
+    float *X = malloc(NNZ * sizeof(float));
+    float *Y = malloc(NNZ * sizeof(float));
     
     //Initialize X to 1
     for (i = 0; i < NNZ; ++i) {
@@ -104,7 +107,6 @@ int main(int argc, char *argv[]) {
     
     start = omp_get_wtime(); //start time measurement
     
-     
     for(loop = 0; loop < numIter; loop++){
         #pragma omp parallel for shared(csr_row,csr_col,X,Y) private(i,j)
             for (i = 0; i < NNZ; ++i) {
@@ -120,7 +122,5 @@ int main(int argc, char *argv[]) {
     printf("Time of computation: %f seconds\n", end-start);
 
     fclose(fptr);
-    if (line)
-        free(line);
     return(0);
 }
