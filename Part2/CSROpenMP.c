@@ -104,8 +104,9 @@ int main(int argc, char *argv[]) {
     
     start = omp_get_wtime(); //start time measurement
     
-    #pragma omp parallel for 
-        for(loop = 0; loop < numIter; loop++){
+     
+    for(loop = 0; loop < numIter; loop++){
+        #pragma omp parallel for shared(csr_row,csr_col,X,Y) private(i,j)
             for (i = 0; i < NNZ; ++i) {
                 
                 Y[i] = 0.0;
@@ -114,7 +115,7 @@ int main(int argc, char *argv[]) {
                 }
             }
             memcpy(X, Y, sizeof(X));
-        }
+    }
     end = omp_get_wtime(); //end time measurement
     printf("Time of computation: %f seconds\n", end-start);
 
