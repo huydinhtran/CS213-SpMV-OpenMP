@@ -139,14 +139,7 @@ int main(int argc, char *argv[]) {
     
     start = omp_get_wtime(); //start time measurement
     
-    for (i = 0; i < rowNum; ++i) {
-            Y[i] = 0.0;
-    }
-
     for(loop = 0; loop < numIter; loop++){
-        for (i = 0; i < rowNum; ++i) {
-                Y[i] = 0.0;
-        }
         #pragma omp parallel for shared(csr_row,csr_col,csr_val,X,Y) private(i,j)
             for (i = 0; i < rowNum; ++i) {
                 for (j = csc_col[i]; j < csc_col[i+1]; ++j){
@@ -154,6 +147,9 @@ int main(int argc, char *argv[]) {
                 }
             }
             memcpy(X, Y, sizeof(double)*rowNum);
+            for (i = 0; i < rowNum; ++i) {
+                Y[i] = 0.0;
+            }
     }
     end = omp_get_wtime(); //end time measurement
     printf("Time of computation: %f seconds\n", end-start);
