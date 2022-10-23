@@ -106,7 +106,7 @@ int main(int argc, char *argv[]) {
     start = omp_get_wtime(); //start time measurement
     
     for(loop = 0; loop < numIter; loop++){
-        #pragma omp parallel for shared(csr_row,csr_col,X,Y) private(i,j)
+        #pragma omp parallel for shared(csr_row,csr_col,csr_val,X,Y) private(i,j)
             for (i = 0; i < rowNum; ++i) {
                 Y[i] = 0.0;
                 for (j = csr_row[i]; j < csr_row[i+1]; ++j){

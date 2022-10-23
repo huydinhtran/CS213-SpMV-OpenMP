@@ -142,7 +142,7 @@ int main(int argc, char *argv[]) {
     }
 
     for(loop = 0; loop < numIter; loop++){
-        #pragma omp parallel for shared(csr_row,csr_col,X,Y) private(i,j)
+        #pragma omp parallel for shared(csr_row,csr_col,csr_val,X,Y) private(i,j)
             for (i = 0; i < rowNum; ++i) {
                 for (j = csc_col[i]; j < csc_col[i+1]; ++j){
                     Y[csc_row[j]] += csc_val[j] * X[i];
