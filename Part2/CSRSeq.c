@@ -44,23 +44,21 @@ int main(int argc, char *argv[]) {
     }
 
     //COO arrays
-    // int* array = malloc(n * sizeof(int));
     double  *coo_val = malloc(NNZ * sizeof(double));
     int    *coo_row = malloc(NNZ * sizeof(int));
     int    *coo_col = malloc(NNZ * sizeof(int));
     int    counter = 0;
     
-
     while ((read = getline(&line, &len, fptr)) != -1) {
         token = strtok(line, " ");
         for(i = 0; i < 3; i++){
             if(i == 0){
                 rowInd = atoi(token);
-                coo_row[counter] = rowInd;
+                coo_row[counter] = rowInd-1;
             }
             if(i==1){
                 colInd = atoi(token);
-                coo_col[counter] = colInd;
+                coo_col[counter] = colInd-1;
             }
             if(i==2){
                 value = atof(token);
@@ -75,8 +73,8 @@ int main(int argc, char *argv[]) {
 
     //CSR arrays
     double *csr_val = malloc(NNZ     * sizeof(double));
-    int   *csr_col = malloc(NNZ     * sizeof(int));
-    int   *csr_row = malloc((NNZ+1) * sizeof(int));
+    int    *csr_col = malloc(NNZ     * sizeof(int));
+    int    *csr_row = malloc((NNZ+1) * sizeof(int));
 
     for (i = 0; i < NNZ; i++)
     {
@@ -97,55 +95,50 @@ int main(int argc, char *argv[]) {
         csr_row[i + 1] += csr_row[i];
     }
 
-    double *X = malloc(NNZ * sizeof(double));
-    double *Y = malloc(NNZ * sizeof(double));
+    double *X = malloc(rowNum * sizeof(double));
+    double *Y = malloc(rowNum * sizeof(double));
     
     //Initialize X to 1
-    for (i = 0; i < NNZ; ++i) {
+    for (i = 0; i < rowNum; ++i) {
         X[i] = 1.0;
     }
     
     start = omp_get_wtime(); //start time measurement
     
     for(loop = 0; loop < numIter; loop++){
-        for (i = 0; i < NNZ; ++i) {
-            
+        for (i = 0; i < rowNum; ++i) {
             Y[i] = 0.0;
             for (j = csr_row[i]; j < csr_row[i+1]; ++j){
                 Y[i] += csr_val[j] * X[csr_col[j]];
+                
             }
         }
-        memcpy(X, Y, sizeof(X));
+        memcpy(X, Y, sizeof(double)*rowNum);
     }
+
     end = omp_get_wtime(); //end time measurement
     printf("Time of computation: %f seconds\n", end-start);
 
-    fclose(fptr);
     FILE *fwrite;
     
     if(strcmp(argv[1], "matrix1.txt") == 0){
-        fwrite = fopen ("CSRVec1.txt", "w+");
-        for(i = 0; i < NNZ; i++){
-            if(Y[i] > 0.0){
-                fprintf(fwrite, "%f\n", Y[i]);
-            }
+        fwrite = fopen ("CSRVec1.txt", "w");
+        for(i = 0; i < rowNum; i++){
+            fprintf(fwrite, "%f\n", Y[i]);
         }
     }
     if(strcmp(argv[1], "matrix2.txt") == 0){
-        fwrite = fopen ("CSRVec2.txt", "w+");
-        for(i = 0; i < NNZ; i++){
-            if(Y[i] > 0.0){
-                fprintf(fwrite, "%f\n", Y[i]);
-            }
+        fwrite = fopen ("CSRVec2.txt", "w");
+        for(i = 0; i < rowNum; i++){
+            fprintf(fwrite, "%f\n", Y[i]);
         }
     }
     if(strcmp(argv[1], "matrix3.txt") == 0){
-        fwrite = fopen ("CSRVec3.txt", "w+");
-        for(i = 0; i < NNZ; i++){
-            if(Y[i] > 0.0){
-                fprintf(fwrite, "%f\n", Y[i]);
-            }
+        fwrite = fopen ("CSRVec3.txt", "w");
+        for(i = 0; i < rowNum; i++){
+            fprintf(fwrite, "%f\n", Y[i]);
         }
     }
+
     return(0);
 }

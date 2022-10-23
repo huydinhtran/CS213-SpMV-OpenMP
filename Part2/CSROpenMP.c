@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
     
     char *token;
     int rowInd, colInd;
-    float value;
+    double value;
     int firstRow = 1;
     int rowNum, colNum, NNZ, i, j, k, loop;
 
@@ -44,23 +44,21 @@ int main(int argc, char *argv[]) {
     }
 
     //COO arrays
-    // int* array = malloc(n * sizeof(int));
-    float  *coo_val = malloc(NNZ * sizeof(float));
+    double  *coo_val = malloc(NNZ * sizeof(double));
     int    *coo_row = malloc(NNZ * sizeof(int));
     int    *coo_col = malloc(NNZ * sizeof(int));
     int    counter = 0;
     
-
     while ((read = getline(&line, &len, fptr)) != -1) {
         token = strtok(line, " ");
         for(i = 0; i < 3; i++){
             if(i == 0){
                 rowInd = atoi(token);
-                coo_row[counter] = rowInd;
+                coo_row[counter] = rowInd-1;
             }
             if(i==1){
                 colInd = atoi(token);
-                coo_col[counter] = colInd;
+                coo_col[counter] = colInd-1;
             }
             if(i==2){
                 value = atof(token);
@@ -74,9 +72,9 @@ int main(int argc, char *argv[]) {
     }
 
     //CSR arrays
-    float *csr_val = malloc(NNZ     * sizeof(float));
-    int   *csr_col = malloc(NNZ     * sizeof(int));
-    int   *csr_row = malloc((NNZ+1) * sizeof(int));
+    double *csr_val = malloc(NNZ     * sizeof(double));
+    int    *csr_col = malloc(NNZ     * sizeof(int));
+    int    *csr_row = malloc((NNZ+1) * sizeof(int));
 
     for (i = 0; i < NNZ; i++)
     {
@@ -97,11 +95,11 @@ int main(int argc, char *argv[]) {
         csr_row[i + 1] += csr_row[i];
     }
 
-    float *X = malloc(NNZ * sizeof(float));
-    float *Y = malloc(NNZ * sizeof(float));
+    double *X = malloc(rowNum * sizeof(double));
+    double *Y = malloc(rowNum * sizeof(double));
     
     //Initialize X to 1
-    for (i = 0; i < NNZ; ++i) {
+    for (i = 0; i < rowNum; ++i) {
         X[i] = 1.0;
     }
     
@@ -109,18 +107,39 @@ int main(int argc, char *argv[]) {
     
     for(loop = 0; loop < numIter; loop++){
         #pragma omp parallel for shared(csr_row,csr_col,X,Y) private(i,j)
-            for (i = 0; i < NNZ; ++i) {
-                
+            for (i = 0; i < rowNum; ++i) {
                 Y[i] = 0.0;
                 for (j = csr_row[i]; j < csr_row[i+1]; ++j){
                     Y[i] += csr_val[j] * X[csr_col[j]];
+                    
                 }
             }
-            memcpy(X, Y, sizeof(X));
+            memcpy(X, Y, sizeof(double)*rowNum);
     }
+
     end = omp_get_wtime(); //end time measurement
     printf("Time of computation: %f seconds\n", end-start);
 
-    fclose(fptr);
+    FILE *fwrite;
+    
+    if(strcmp(argv[1], "matrix1.txt") == 0){
+        fwrite = fopen ("CSRVec1.txt", "w");
+        for(i = 0; i < rowNum; i++){
+            fprintf(fwrite, "%f\n", Y[i]);
+        }
+    }
+    if(strcmp(argv[1], "matrix2.txt") == 0){
+        fwrite = fopen ("CSRVec2.txt", "w");
+        for(i = 0; i < rowNum; i++){
+            fprintf(fwrite, "%f\n", Y[i]);
+        }
+    }
+    if(strcmp(argv[1], "matrix3.txt") == 0){
+        fwrite = fopen ("CSRVec3.txt", "w");
+        for(i = 0; i < rowNum; i++){
+            fprintf(fwrite, "%f\n", Y[i]);
+        }
+    }
+
     return(0);
 }
