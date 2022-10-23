@@ -162,19 +162,19 @@ int main(int argc, char *argv[]) {
     if(strcmp(argv[1], "matrix1.txt") == 0){
         fwrite = fopen ("CSCVec1.txt", "w");
         for(i = 0; i < rowNum; i++){
-            fprintf(fwrite, "%0.7f\n", X[i]);
+            fprintf(fwrite, "%.13e\n", X[i]);
         }
     }
     if(strcmp(argv[1], "matrix2.txt") == 0){
         fwrite = fopen ("CSCVec2.txt", "w");
         for(i = 0; i < rowNum; i++){
-            fprintf(fwrite, "%0.7f\n", X[i]);
+            fprintf(fwrite, "%.13e\n", X[i]);
         }
     }
     if(strcmp(argv[1], "matrix3.txt") == 0){
         fwrite = fopen ("CSCVec3.txt", "w");
         for(i = 0; i < rowNum; i++){
-            fprintf(fwrite, "%0.7f\n", X[i]);
+            fprintf(fwrite, "%.13e\n", X[i]);
         }
     }
     

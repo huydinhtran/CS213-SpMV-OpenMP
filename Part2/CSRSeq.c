@@ -126,19 +126,19 @@ int main(int argc, char *argv[]) {
     if(strcmp(argv[1], "matrix1.txt") == 0){
         fwrite = fopen ("CSRVec1.txt", "w");
         for(i = 0; i < rowNum; i++){
-            fprintf(fwrite, "%0.7f\n", Y[i]);
+            fprintf(fwrite, "%.13e\n", Y[i]);
         }
     }
     if(strcmp(argv[1], "matrix2.txt") == 0){
         fwrite = fopen ("CSRVec2.txt", "w");
         for(i = 0; i < rowNum; i++){
-            fprintf(fwrite, "%0.7f\n", Y[i]);
+            fprintf(fwrite, "%.13e\n", Y[i]);
         }
     }
     if(strcmp(argv[1], "matrix3.txt") == 0){
         fwrite = fopen ("CSRVec3.txt", "w");
         for(i = 0; i < rowNum; i++){
-            fprintf(fwrite, "%0.7f\n", Y[i]);
+            fprintf(fwrite, "%.13e\n", Y[i]);
         }
     }
 
