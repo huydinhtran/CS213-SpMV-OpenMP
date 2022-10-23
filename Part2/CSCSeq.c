@@ -42,6 +42,8 @@ int main(int argc, char *argv[]) {
         }
         token = strtok (NULL, " ");
     }
+    
+    printf("Row: %d, Column: %d, NNZ:%d\n",rowNum,colNum,NNZ);
 
     //COO arrays
     double  *coo_val = malloc(NNZ * sizeof(double));
