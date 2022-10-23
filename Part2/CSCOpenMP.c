@@ -144,16 +144,16 @@ int main(int argc, char *argv[]) {
     }
 
     for(loop = 0; loop < numIter; loop++){
-        #pragma omp parallel for shared(csr_row,csr_col,csr_val,X) private(i,j,Y)
+        for (i = 0; i < rowNum; ++i) {
+                Y[i] = 0.0;
+        }
+        #pragma omp parallel for shared(csr_row,csr_col,csr_val,X,Y) private(i,j)
             for (i = 0; i < rowNum; ++i) {
                 for (j = csc_col[i]; j < csc_col[i+1]; ++j){
                     Y[csc_row[j]] += csc_val[j] * X[i];
                 }
             }
             memcpy(X, Y, sizeof(double)*rowNum);
-            for (i = 0; i < rowNum; ++i) {
-                Y[i] = 0.0;
-            }
     }
     end = omp_get_wtime(); //end time measurement
     printf("Time of computation: %f seconds\n", end-start);
@@ -163,19 +163,19 @@ int main(int argc, char *argv[]) {
     if(strcmp(argv[1], "matrix1.txt") == 0){
         fwrite = fopen ("CSCVec1.txt", "w");
         for(i = 0; i < rowNum; i++){
-            fprintf(fwrite, "%f\n", X[i]);
+            fprintf(fwrite, "%0.7f\n", X[i]);
         }
     }
     if(strcmp(argv[1], "matrix2.txt") == 0){
         fwrite = fopen ("CSCVec2.txt", "w");
         for(i = 0; i < rowNum; i++){
-            fprintf(fwrite, "%f\n", X[i]);
+            fprintf(fwrite, "%0.7f\n", X[i]);
         }
     }
     if(strcmp(argv[1], "matrix3.txt") == 0){
         fwrite = fopen ("CSCVec3.txt", "w");
         for(i = 0; i < rowNum; i++){
-            fprintf(fwrite, "%f\n", X[i]);
+            fprintf(fwrite, "%0.7f\n", X[i]);
         }
     }
     
